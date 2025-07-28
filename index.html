@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Sterowania Piecem na Pellet</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Panel Sterowania Piecem na Pellet</h1>
+
+        <section class="mqtt-connection-section card">
+            <h2>Połączenie MQTT</h2>
+            <div class="input-group">
+                <label for="mqtt-broker">Broker MQTT:</label>
+                <input type="text" id="mqtt-broker" value="your_mqtt_broker_address" placeholder="np. broker.hivemq.com">
+            </div>
+            <div class="input-group">
+                <label for="mqtt-port">Port:</label>
+                <input type="number" id="mqtt-port" value="8884" placeholder="np. 8884 (WSS)">
+            </div>
+            <div class="input-group">
+                <label for="mqtt-username">Użytkownik:</label>
+                <input type="text" id="mqtt-username" value="your_mqtt_username" placeholder="Opcjonalnie">
+            </div>
+            <div class="input-group">
+                <label for="mqtt-password">Hasło:</label>
+                <input type="password" id="mqtt-password" value="your_mqtt_password" placeholder="Opcjonalnie">
+            </div>
+            <div class="connection-actions">
+                <button id="mqtt-connect-btn" class="btn btn-primary">Połącz</button>
+                <button id="mqtt-disconnect-btn" class="btn btn-danger" disabled>Rozłącz</button>
+                <span id="mqtt-status-indicator" class="status-indicator disconnected"></span>
+                <span id="mqtt-status-text" class="status-text">Rozłączono</span>
+            </div>
+            <div class="mqtt-log-container">
+                <h3>Log MQTT</h3>
+                <div id="mqtt-log" class="mqtt-log"></div>
+            </div>
+        </section>
+
+        <section class="main-controls-section card">
+            <h2>Sterowanie Głównymi Parametrami</h2>
+            <div class="control-group">
+                <button id="power-btn" class="btn btn-lg btn-toggle" disabled>Zasilanie ON/OFF</button>
+            </div>
+            <div class="control-group">
+                <label for="target-slider">Temperatura Docelowa: <span id="target-display">70°C</span></label>
+                <input type="range" id="target-slider" min="30" max="85" value="70" disabled>
+                <p>Aktualna Temperatura Wody: <span id="water-temp">0.0°C</span></p>
+                <div class="progress-bar-container">
+                    <div id="water-progress" class="progress-bar-fill"></div>
+                </div>
+            </div>
+            <div class="control-group">
+                <p>Temperatura Pomieszczenia: <span id="room-temp">0.0°C</span></p>
+                <p>Temperatura Palnika: <span id="burner-temp">0.0°C</span></p>
+                <p>Temperatura Spalin: <span id="exhaust-temp">0.0°C</span></p>
+            </div>
+            <div class="status-indicators-mini">
+                <span id="flame-indicator" class="status-badge off">Płomień OFF</span>
+                <span id="feeder-status-indicator-mini" class="status-badge">Podajnik</span>
+                <span id="blower-status-indicator-mini" class="status-badge">Dmuchawa</span>
+            </div>
+            <div id="igniter-indicator" class="igniter-status" style="display: none;">
+                <span class="igniter-icon">🔥</span>
+                <span id="igniter-status-text">Zapalarka Grzeje</span>
+                <span id="igniter-temp-display"></span>
+            </div>
+        </section>
+
+        <section class="feeder-section card">
+            <h2>Ustawienia Podajnika</h2>
+            <p id="feeder-status" class="status-text on">PODAJNIK: PRZERWA</p>
+            <div class="control-group">
+                <label for="feed-time">Czas podawania (s):</label>
+                <input type="number" id="feed-time" min="0" value="5" disabled>
+            </div>
+            <div class="control-group">
+                <label for="pause-time">Czas przerwy (s):</label>
+                <input type="number" id="pause-time" min="0" value="15" disabled>
+            </div>
+            <div class="feeder-cycle-progress">
+                <div id="cycle-progress-bar" class="progress-bar-fill"></div>
+                <span id="cycle-timer">0s</span>
+            </div>
+            <p>Aktualne zużycie pelletu: <span id="pellet-amount">0.00 kg/h</span></p>
+        </section>
+
+        <section class="blower-section card">
+            <h2>Sterowanie Dmuchawą</h2>
+            <p>Aktualna moc dmuchawy: <span id="blower-power-display">0%</span></p>
+            <div class="control-group">
+                <label for="blower-manual-toggle">Tryb manualny dmuchawy:</label>
+                <input type="checkbox" id="blower-manual-toggle" disabled>
+            </div>
+            <div id="blower-manual-controls" style="display: none;">
+                <div class="control-group">
+                    <label for="blower-work-power-slider">Moc dmuchawy (Praca): <span id="blower-work-power-display">0%</span></label>
+                    <input type="range" id="blower-work-power-slider" min="0" max="100" value="50" disabled>
+                </div>
+                <div class="control-group">
+                    <label for="blower-maintenance-manual-power-slider">Moc dmuchawy (Konserwacja): <span id="blower-maintenance-manual-power-display">0%</span></label>
+                    <input type="range" id="blower-maintenance-manual-power-slider" min="0" max="100" value="30" disabled>
+                </div>
+                <div class="control-group">
+                    <label for="blower-purge-manual-power-slider">Moc dmuchawy (Przedmuch): <span id="blower-purge-manual-power-display">0%</span></label>
+                    <input type="range" id="blower-purge-manual-power-slider" min="0" max="100" value="80" disabled>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="blower-purge-toggle">Automatyczny Przedmuch:</label>
+                <input type="checkbox" id="blower-purge-toggle" disabled>
+            </div>
+            <div id="blower-purge-times" style="display: none;">
+                <div class="input-group">
+                    <label for="blower-purge-on">Czas Przedmuchu ON (s):</label>
+                    <input type="number" id="blower-purge-on" min="0" value="30" disabled>
+                </div>
+                <div class="input-group">
+                    <label for="blower-purge-off">Czas Przedmuchu OFF (min):</label>
+                    <input type="number" id="blower-purge-off" min="0" value="60" disabled>
+                </div>
+            </div>
+        </section>
+
+        <section class="maintenance-section card">
+            <h2>Konserwacja i Czyszczenie</h2>
+            <p>Status konserwacji: <span id="maintenance-status" class="maintenance-active">NIEAKTYWNY</span></p>
+            <p>Czyszczenie Popiołu: <span id="ash-cleaning-status">NIE</span> <span id="cleaning-status-badge" class="status-badge"></span></p>
+            <div class="control-group">
+                <label for="maintenance-feed">Podajnik konserwacja (s):</label>
+                <input type="number" id="maintenance-feed" min="0" value="10" disabled>
+            </div>
+            <div class="control-group">
+                <label for="maintenance-pause">Przerwa konserwacja (s):</label>
+                <input type="number" id="maintenance-pause" min="0" value="30" disabled>
+            </div>
+            <div class="control-group">
+                <button id="ash-btn" class="btn btn-info" disabled>Wyczyść popiół ręcznie</button>
+            </div>
+            <h3>Ustawienia Autoczyszczenia</h3>
+            <div class="control-group flex-row">
+                <input type="number" id="clean-hours" min="0" value="0" placeholder="Godziny" disabled>h
+                <input type="number" id="clean-minutes" min="0" value="0" placeholder="Minuty" disabled>m
+                <input type="number" id="clean-seconds" min="0" value="0" placeholder="Sekundy" disabled>s
+                <button id="update-clean-btn" class="btn btn-secondary" disabled>Ustaw Czas</button>
+            </div>
+            <p>Pozostało do czyszczenia: <span id="clean-countdown-display">00:00:00</span></p>
+        </section>
+
+        <section class="stats-section card">
+            <h2>Statystyki Systemu</h2>
+            <p>Czas pracy sesji: <span id="session-uptime">00:00:00</span> <button id="reset-session-uptime-btn" class="btn btn-sm btn-warning" disabled>Resetuj</button></p>
+            <p>Całkowity czas pracy: <span id="total-uptime">00:00:00</span></p>
+            <p>Godziny pracy palnika: <span id="burner-hours">00:00:00</span></p>
+            <p>Siła sygnału (RSSI): <span id="rssi">-0dBm</span></p>
+            <p>Adres IP: <span id="ip-addr">0.0.0.0</span></p>
+            <p class="efficiency-display">
+                <span id="efficiency-label">0% Wydajność</span>
+                <span class="efficiency-bar">
+                    <span id="efficiency-fill" style="width: 0%;"></span>
+                </span>
+            </p>
+        </section>
+
+        <section class="cost-section card">
+            <h2>Koszty i Zużycie</h2>
+            <div class="input-group">
+                <label for="pellet-price">Cena pelletu za kg (PLN):</label>
+                <input type="number" id="pellet-price" min="0" step="0.01" value="1.50" disabled>
+            </div>
+            <div class="input-group">
+                <label for="pellet-consumption">Średnie zużycie pelletu (kg/h):</label>
+                <span id="average-pellet-consumption">0.00 kg/h</span>
+            </div>
+            <p>Szacowany całkowity koszt: <span id="estimated-cost">0.00 PLN</span></p>
+            <p>Całkowity obliczony koszt: <span id="total-calculated-cost">0.00 PLN</span></p>
+        </section>
+
+        <section class="chart-section card">
+            <h2>Wykresy</h2>
+            <div id="main-chart-switcher" class="chart-switcher">
+                <button class="chart-switch active" data-chart-type="temperature">Temperatury</button>
+                <button class="chart-switch" data-chart-type="consumption">Zużycie</button>
+            </div>
+            <div class="chart-controls">
+                <div class="history-range-buttons">
+                    <button class="history-btn active" data-range="1h">1h</button>
+                    <button class="history-btn" data-range="6h">6h</button>
+                    <button class="history-btn" data-range="24h">24h</button>
+                    <button class="history-btn" data-range="7d">7d</button>
+                </div>
+                <div class="zoom-controls">
+                    <button id="zoom-in" class="btn btn-sm">+</button>
+                    <button id="zoom-out" class="btn btn-sm">-</button>
+                    <button id="zoom-reset" class="btn btn-sm">Reset Zoom</button>
+                </div>
+            </div>
+
+            <div id="chart-container-temp" class="chart-container">
+                <h3>Wykres Temperatur</h3>
+                <div id="temperature-chart-toggles" class="dataset-toggles">
+                    <button class="dataset-toggle active" data-chart="water_temp">Woda</button>
+                    <button class="dataset-toggle active" data-chart="room_temp">Pokój</button>
+                    <button class="dataset-toggle active" data-chart="burner_temp">Palnik</button>
+                    <button class="dataset-toggle active" data-chart="exhaust_temp">Spaliny</button>
+                </div>
+                <canvas id="temperature-chart"></canvas>
+            </div>
+            <div id="chart-container-consumption" class="chart-container" style="display: none;">
+                <h3>Wykres Zużycia Pelletu</h3>
+                <canvas id="consumption-chart"></canvas>
+            </div>
+        </section>
+
+        <section class="reset-section card">
+            <h2>Resetowanie Danych Historycznych</h2>
+            <div class="input-group">
+                <label for="reset-password">Hasło MQTT (do potwierdzenia resetu historii):</label>
+                <input type="password" id="reset-password">
+            </div>
+            <button id="reset-history-btn" class="btn btn-danger" disabled>Resetuj Całą Historię</button>
+            <div id="reset-message" class="message-text"></div>
+        </section>
+    </div>
+
+    <script src="cdn.min.js"></script>
+</body>
+</html>
