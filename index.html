@@ -57,7 +57,7 @@
                 </div>
                 <div class="mqtt-field">
                     <label for="mqtt-port">Port</label>
-                    <input type="number" id="mqtt-port" value="8083">
+                    <input type="number" id="mqtt-port" value="8084">
                 </div>
                 <div class="mqtt-field">
                     <label for="mqtt-username">Nazwa użytkownika</label>
@@ -1323,8 +1323,7 @@
             const data = [];
             for (let i = 29; i >= 0; i--) { // From 29 days ago to today
                 const date = now.minus({ days: i });
-                const dateKey = date.toFormat('yyyy-MM-dd');
-                labels.push(date.toFormat('dd.MM')); // e.g., 15.07
+                const dateKey = date.toFormat('dd.MM')); // e.g., 15.07
                 data.push(monthlyData.has(dateKey) ? monthlyData.get(dateKey) : 0);
             }
             return { labels, data };
