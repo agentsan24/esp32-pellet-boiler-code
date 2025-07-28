@@ -1,0 +1,46 @@
+﻿# ﻿name: Pellet Boiler Control
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  control-boiler:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check for command
+      if: ${{ github.event.issue.number == 1 }}
+      run: |
+        COMMENT="${{ github.event.comment.body }}"
+        
+        # Komendy sterujące
+        if [[ "$COMMENT" == "!on" ]]; then
+          echo "COMMAND=ON" >> $GITHUB_ENV
+        elif [[ "$COMMENT" == "!off" ]]; then
+          echo "COMMAND=OFF" >> $GITHUB_ENV
+        elif [[ "$COMMENT" == "!status" ]]; then
+          echo "COMMAND=STATUS" >> $GITHUB_ENV
+        elif [[ "$COMMENT" =~ ^!temp\ [0-9]{2}$ ]]; then
+          TEMP=${COMMENT//[^0-9]/}
+          echo "COMMAND=TEMP" >> $GITHUB_ENV
+          echo "TEMP_VALUE=$TEMP" >> $GITHUB_ENV
+        fi
+
+    - name: Send MQTT command
+      if: ${{ env.COMMAND != '' }}
+      run: |
+        docker run --rm eclipse-mosquitto:2.0.15 mosquitto_pub \
+          -h ${{ secrets.MQTT_BROKER }} \
+          -p ${{ secrets.MQTT_PORT }} \
+          -u ${{ secrets.MQTT_USER }} \
+          -P ${{ secrets.MQTT_PASSWORD }} \
+          -t "${{ secrets.MQTT_TOPIC }}" \
+          -m "$(
+            if [ "$COMMAND" = "ON" ]; then 
+              echo 'ON'
+            elif [ "$COMMAND" = "OFF" ]; then 
+              echo 'OFF'
+            elif [ "$COMMAND" = "TEMP" ]; then 
+              echo '${{ env.TEMP_VALUE }}'
+            fi
+          )"
