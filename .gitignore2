@@ -1,0 +1,57 @@
+# Pliki specyficzne dla systemów operacyjnych
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Katalogi i pliki generowane przez Arduino IDE / PlatformIO
+*.ino.hex
+*.ino.eep
+*.bin
+*.elf
+*.lst
+*.map
+*.o
+*.d
+*.obj
+*.sym
+*.suo
+*.user
+*.bak
+*.tmp
+*.log
+*.pde.hex
+*.pde.eep
+*.dvi
+*.log
+*.bbl
+*.blg
+*.aux
+*.out
+*.toc
+*.nav
+*.snm
+*.fdb_v*
+*.gcno
+*.gcda
+*.gcov
+*.ipch
+
+# W przypadku PlatformIO:
+.pio/
+.vscode/
+.cache/
+
+# Ukryte katalogi i pliki
+.Trashes
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+._.
+*~
+#*#
+
+# Pliki z poufnymi danymi (TEN JEST NAJWAŻNIEJSZY DLA CIEBIE!)
+secrets.h
+
+# W przypadku, gdy używasz innych folderów na biblioteki specyficzne dla projektu, a nie globalne:
+# lib/
