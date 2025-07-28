@@ -401,292 +401,333 @@
                         <div class="cycle-progress">
                             <div class="cycle-progress-bar" id="cycle-progress-bar" style="width: 8.33333%; background: var(--feeder-pause-color);"></div>
                         </div>
-                        <div id="feeder-cycle-timer" class="timer-value">00:00</div>
+                        <div class="status-label">Pozostało: <span id="cycle-timer">55s do końca</span></div>
                     </div>
+                    
+                    <div class="status-label">Średnia ilość peletu: <span id="pellet-amount">0.10</span> kg/h</div>
                 </div>
-
+                
                 <div class="slider-container">
                     <div class="control-header">
-                        <i class="fas fa-fan" style="color: var(--blower-color);"></i>
-                        <span>Sterowanie Dmuchawą</span>
+                        <i class="fas fa-fire-alt" style="color: var(--maintenance-color);"></i>
+                        <span>Tryb podtrzymania płomienia</span>
                     </div>
-                    <div class="feeder-info">
-                        <div class="feeder-icon"><i class="fas fa-wind"></i></div>
-                        <div class="feeder-details">
-                            <div class="status-label">Aktualna moc dmuchawy</div>
-                            <div class="status-value" id="blower-power-display">50%</div>
-                            <div class="progress-container">
-                                <div class="progress-bar blower-bar" id="blower-power-progress" style="width: 50%;"></div>
-                            </div>
-                        </div>
-                    </div>
-
+                    
                     <div class="time-control">
                         <div class="time-input">
-                            <label for="blower-power-work">Moc dmuchawy (praca)</label>
-                            <input type="range" id="blower-power-work" min="0" max="100" value="50">
-                            <span id="blower-power-work-display">50%</span>
+                            <label for="maintenance-feed">Podawanie (s)</label>
+                            <input type="number" id="maintenance-feed" min="1" max="10" value="2">
                         </div>
-                    </div>
-
-                    <div class="time-control">
+                        
                         <div class="time-input">
-                            <label for="blower-power-maintenance">Moc dmuchawy (konserwacja)</label>
-                            <input type="range" id="blower-power-maintenance" min="0" max="100" value="70">
-                            <span id="blower-power-maintenance-display">70%</span>
-                        </div>
-                    </div>
-
-                    <div class="time-control">
-                        <div class="time-input">
-                            <label for="blower-power-purge">Moc dmuchawy (przedmuch)</label>
-                            <input type="range" id="blower-power-purge" min="0" max="100" value="100">
-                            <span id="blower-power-purge-display">100%</span>
+                            <label for="maintenance-pause">Przerwa (s)</label>
+                            <input type="number" id="maintenance-pause" min="10" max="14400" value="60">
                         </div>
                     </div>
                     
                     <div class="auto-clean">
                         <div class="auto-clean-label">
-                            <i class="fas fa-toggle-on"></i> Ręczne sterowanie dmuchawą:
+                            <i class="fas fa-fire-alt"></i>
+                            <span>Status trybu podtrzymania:</span>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" id="blowerManualToggle">
-                            <span class="slider round"></span>
-                        </label>
+                        <div class="maintenance-indicator maintenance-active" id="maintenance-status">AKTYWNY</div>
                     </div>
-
-                    <div class="blower-manual-controls" style="display: none;">
-                        <div class="slider-container">
-                            <div class="slider-label">
-                                <span><i class="fas fa-fan"></i> Ręczna moc dmuchawy:</span>
-                                <span id="manualBlowerPowerDisplay">0%</span>
-                            </div>
-                            <input type="range" id="manualBlowerPowerSlider" min="0" max="100" value="0">
-                        </div>
+                    <div class="status-label">Pozostało do czyszczenia: <span id="clean-timer">23:55:00</span></div>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="control-header">
+                        <i class="fas fa-wind" style="color: var(--blower-color);"></i>
+                        <span>Sterowanie Dmuchawą</span>
                     </div>
-
                     <div class="auto-clean">
-                        <div class="auto-clean-label">
-                            <i class="fas fa-wind"></i> Włącz przedmuch dmuchawy:
-                        </div>
+                        <span>Sterowanie manualne dmuchawą:</span>
                         <label class="switch">
-                            <input type="checkbox" id="blowerPurgeToggle">
-                            <span class="slider round"></span>
+                            <input type="checkbox" id="blower-manual-toggle">
+                            <span class="slider"></span>
                         </label>
                     </div>
+                    
+                    <div class="blower-manual-controls" id="blower-manual-controls" style="display: none;">
+                        <div class="slider-label">
+                            <span>Moc dmuchawy (praca) (%):</span>
+                            <span id="blower-work-power-display">70%</span>
+                        </div>
+                        <input type="range" id="blower-work-power-slider" min="0" max="100" value="70">
 
-                    <div class="time-control" id="blower-purge-settings" style="display: none;">
+                        <div class="slider-label" style="margin-top: 20px;">
+                            <span>Moc dmuchawy (podtrzymanie) (%):</span>
+                            <span id="blower-maintenance-manual-power-display">30%</span>
+                        </div>
+                        <input type="range" id="blower-maintenance-manual-power-slider" min="0" max="100" value="30">
+
+                        <div class="slider-label" style="margin-top: 20px;">
+                            <span>Moc dmuchawy (przedmuch) (%):</span>
+                            <span id="blower-purge-manual-power-display">50%</span>
+                        </div>
+                        <input type="range" id="blower-purge-manual-power-slider" min="0" max="100" value="50">
+                    </div>
+
+                    <div class="slider-label" style="margin-top: 20px;">
+                        <span>Aktualna moc dmuchawy (%):</span>
+                        <span id="blower-power-display">20%</span>
+                    </div>
+                    <input type="range" id="blower-power-slider" min="0" max="100" value="50" disabled="">
+
+                    <div class="auto-clean" style="margin-top: 20px;">
+                        <span>Tryb przedmuchu dmuchawy:</span>
+                        <label class="switch">
+                            <input type="checkbox" id="blower-purge-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="time-control" id="blower-purge-times" style="display: none;">
                         <div class="time-input">
-                            <label for="blower-purge-time">Czas przedmuchu (s)</label>
-                            <input type="number" id="blower-purge-time" min="1" value="10">
+                            <label for="blower-purge-on">Przedmuch ON (s)</label>
+                            <input type="number" id="blower-purge-on" min="1" max="60" value="5">
                         </div>
                         <div class="time-input">
-                            <label for="blower-purge-interval">Interwał przedmuchu (min)</label>
-                            <input type="number" id="blower-purge-interval" min="1" value="60">
+                            <label for="blower-purge-off">Przedmuch OFF (s)</label>
+                            <input type="number" id="blower-purge-off" min="10" max="3600" value="300">
                         </div>
                     </div>
                 </div>
 
-                <div class="slider-container">
-                    <div class="control-header">
-                        <i class="fas fa-brush" style="color: var(--clean-color);"></i>
-                        <span>Czyszczenie popiołu</span>
-                    </div>
-                    <button id="clean-ash-btn" class="warning"><i class="fas fa-broom"></i> Uruchom czyszczenie popiołu</button>
-                    <div class="edit-clean-container">
-                        <div class="edit-clean-header">
-                            <i class="fas fa-clock"></i> Ustaw czas do następnego czyszczenia
-                        </div>
-                        <div class="edit-clean-fields">
-                            <div class="edit-time-input">
-                                <label for="clean-hours">Godziny</label>
-                                <input type="number" id="clean-hours" min="0" value="0">
-                            </div>
-                            <div class="edit-time-input">
-                                <label for="clean-minutes">Minuty</label>
-                                <input type="number" id="clean-minutes" min="0" max="59" value="0">
-                            </div>
-                            <div class="edit-time-input">
-                                <label for="clean-seconds">Sekundy</label>
-                                <input type="number" id="clean-seconds" min="0" max="59" value="0">
-                            </div>
-                            <button id="update-clean-btn" class="success"><i class="fas fa-save"></i> Zapisz</button>
+                <div class="ignition-container card">
+                    <h3 class="card-title"><i class="fas fa-fire-alt"></i> Zapłon i Płomień</h3>
+                    <div class="flame-indicator on" id="flame-indicator">
+                        <i class="fas fa-fire"></i>
+                        <div class="igniter-indicator ready" id="igniter-indicator" style="display: none;">
+                            <i class="fas fa-bolt"></i>
                         </div>
                     </div>
+                    <div class="ignition-status off" id="igniter-status-text">off</div>
+                    <div class="temperature-display" id="igniter-temp-display">20.0°C</div>
                 </div>
-
-                <div class="correction-info">
-                    <h3 class="card-title"><i class="fas fa-wrench"></i> Korekta Temperatury Palnika</h3>
-                    <div class="correction-value" id="burner-correction-display">0.0°C</div>
-                    <div class="correction-controls">
-                        <input type="number" step="0.1" id="burnerTempCorrectionInput" class="correction-input" placeholder="Wartość korekty">
-                        <button id="saveBurnerCorrectionBtn" class="correction-btn success">Zapisz</button>
-                        <button id="resetBurnerCorrectionBtn" class="correction-btn danger">Resetuj</button>
+                
+                <div class="auto-clean">
+                    <div class="auto-clean-label">
+                        <i class="fas fa-broom"></i>
+                        <span>Automatyczne czyszczenie:</span>
                     </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-clean-toggle" checked="">
+                        <span class="slider"></span>
+                    </label>
                 </div>
+                
+                <button id="ash-btn" class="warning">
+                    <i class="fas fa-eraser"></i> WYMUSZONE CZYSZCZENIE
+                </button>
 
-                <div class="slider-container">
-                    <div class="control-header">
-                        <i class="fas fa-oil-can" style="color: var(--maintenance-color);"></i>
-                        <span>Tryb konserwacji</span>
+                <div class="edit-clean-container">
+                    <div class="edit-clean-header">
+                        <i class="fas fa-clock"></i> Edytuj Czas Czyszczenia
                     </div>
-                    <div class="feeder-info">
-                        <div class="feeder-icon" style="background: rgba(155, 89, 182, 0.2); color: var(--maintenance-color);"><i class="fas fa-tools"></i></div>
-                        <div class="feeder-details">
-                            <div class="status-label">Status konserwacji</div>
-                            <div class="maintenance-indicator maintenance-inactive" id="maintenance-status">NIEAKTYWNY</div>
+                    <div class="edit-clean-fields">
+                        <div class="edit-time-input">
+                            <label for="clean-hours">Godziny</label>
+                            <input type="number" id="clean-hours" min="0" max="23" value="3">
                         </div>
+                        <div class="edit-time-input">
+                            <label for="clean-minutes">Minuty</label>
+                            <input type="number" id="clean-minutes" min="0" max="59" value="0">
+                        </div>
+                        <div class="edit-time-input">
+                            <label for="clean-seconds">Sekundy</label>
+                            <input type="number" id="clean-seconds" min="0" max="59" value="0">
+                        </div>
+                        <button id="update-clean-btn" class="success"><i class="fas fa-save"></i> Zapisz</button>
                     </div>
-                    <div class="time-control">
-                        <div class="time-input">
-                            <label for="maintenance-feed-time">Czas podawania (s)</label>
-                            <input type="number" id="maintenance-feed-time" min="1" value="2">
-                        </div>
-                        <div class="time-input">
-                            <label for="maintenance-pause-time">Czas przerwy (s)</label>
-                            <input type="number" id="maintenance-pause-time" min="1" value="5">
-                        </div>
+                    <div class="status-label" style="margin-top: 15px;">
+                        <i class="fas fa-hourglass-half"></i> Czas do czyszczenia: <span id="clean-countdown-display">02:21:55</span>
                     </div>
                 </div>
             </div>
             
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-chart-line"></i> Monitoring i statystyki</h2>
-
-                <div class="chart-switcher">
-                    <div class="chart-switch active" id="main-chart-switcher-temp">
-                        <i class="fas fa-chart-line"></i> Temperatura
+                <h2 class="card-title"><i class="fas fa-chart-line"></i> Monitoring Systemu</h2>
+                
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-label"><i class="fas fa-clock"></i> Czas pracy sesji</div>
+                        <div class="status-value" id="session-uptime">00:41:17</div>
+                        <button id="reset-session-uptime-btn" class="reset-stats-btn"><i class="fas fa-redo"></i> Resetuj sesję</button>
                     </div>
-                    <div class="chart-switch" id="main-chart-switcher-consumption">
-                        <i class="fas fa-gas-pump"></i> Zużycie Pelletu
+                    
+                    <div class="status-item">
+                        <div class="status-label"><i class="fas fa-clock"></i> Całkowity czas pracy</div>
+                        <div class="status-value" id="total-uptime">03:38:06</div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="status-label"><i class="fas fa-chart-bar"></i> Średnie zużycie (ostatnia godzina)</div>
+                        <div class="status-value" id="average-pellet-consumption">0.19kg/h</div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="status-label"><i class="fas fa-wifi"></i> Siła sygnału</div>
+                        <div class="status-value" id="rssi">-59dBm</div>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-label"><i class="fas fa-network-wired"></i> Adres IP</div>
+                        <div class="status-value" id="ip-addr">192.168.3.109</div>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-label"><i class="fas fa-cloud"></i> Status MQTT</div>
+                        <div class="status-value" id="mqtt-status-text">Brak</div>
+                        <div class="mqtt-indicator" id="mqtt-status-indicator"></div>
                     </div>
                 </div>
 
-                <div id="temperature-chart-section" class="tab-content active">
-                    <div class="chart-controls">
-                        <div class="dataset-toggle active" id="toggle-water-temp">
-                            <span class="chart-color-indicator" style="background-color: #3498db;"></span> Woda
-                        </div>
-                        <div class="dataset-toggle active" id="toggle-room-temp">
-                            <span class="chart-color-indicator" style="background-color: #e67e22;"></span> Pokój
-                        </div>
-                        <div class="dataset-toggle active" id="toggle-burner-temp">
-                            <span class="chart-color-indicator" style="background-color: #e74c3c;"></span> Palnik
-                        </div>
-                        <div class="dataset-toggle active" id="toggle-exhaust-temp">
-                            <span class="chart-color-indicator" style="background-color: #9b59b6;"></span> Spaliny
-                        </div>
+                <div class="system-status">
+                    <div class="status-badge status-good" id="maintenance-status-badge">
+                        <i class="fas fa-wrench"></i> Tryb podtrzymania: <span id="maintenance-status">NIE</span>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="temperatureChart"></canvas>
-                        <div class="zoom-controls">
-                            <div class="zoom-btn" id="zoom-in-temp">+</div>
-                            <div class="zoom-btn" id="zoom-out-temp">-</div>
-                            <div class="zoom-btn reset" id="zoom-reset-temp">Reset</div>
-                        </div>
-                    </div>
-                    <div class="history-range">
-                        <div class="history-btn active" data-range="1h" id="range-temp-1h">1h</div>
-                        <div class="history-btn" data-range="6h" id="range-temp-6h">6h</div>
-                        <div class="history-btn" data-range="24h" id="range-temp-24h">24h</div>
-                        <div class="history-btn" data-range="7d" id="range-temp-7d">7d</div>
+                    <div class="status-badge status-good" id="cleaning-status-badge">
+                        <i class="fas fa-brush"></i> Czyszczenie: <span id="ash-cleaning-status">NIE</span>
                     </div>
                 </div>
 
-                <div id="consumption-chart-section" class="tab-content">
-                    <div class="chart-container">
-                        <canvas id="consumptionChart"></canvas>
-                        <div class="zoom-controls">
-                            <div class="zoom-btn" id="zoom-in-consumption">+</div>
-                            <div class="zoom-btn" id="zoom-out-consumption">-</div>
-                            <div class="zoom-btn reset" id="zoom-reset-consumption">Reset</div>
-                        </div>
+                <div class="chart-controls" id="temperature-chart-toggles" style="display: flex;"> 
+                    <div class="dataset-toggle active" data-chart="water_temp">
+                        <span class="chart-color-indicator" style="background-color: #3498db;"></span> Woda
                     </div>
-                    <div class="history-range">
-                        <div class="history-btn active" data-range="1h" id="range-consumption-1h">1h</div>
-                        <div class="history-btn" data-range="6h" id="range-consumption-6h">6h</div>
-                        <div class="history-btn" data-range="24h" id="range-consumption-24h">24h</div>
-                        <div class="history-btn" data-range="7d" id="range-consumption-7d">7d</div>
+                    <div class="dataset-toggle active" data-chart="room_temp">
+                        <span class="chart-color-indicator" style="background-color: #2ecc71;"></span> Pokój
                     </div>
+                    <div class="dataset-toggle active" data-chart="burner_temp">
+                        <span class="chart-color-indicator" style="background-color: #e74c3c;"></span> Palnik
+                    </div>
+                    <div class="dataset-toggle active" data-chart="exhaust_temp">
+                        <span class="chart-color-indicator" style="background-color: #f39c12;"></span> Spaliny
+                    </div>
+                </div>
+
+                <div class="chart-container" id="chart-container-temp">
+                    <div class="zoom-controls">
+                        <div class="zoom-btn" id="zoom-in">+</div>
+                        <div class="zoom-btn" id="zoom-out">-</div>
+                        <div class="zoom-btn reset" id="zoom-reset">Reset</div>
+                    </div>
+                    <canvas id="temperature-chart" width="611" height="270" style="display: block; box-sizing: border-box; height: 270px; width: 611px;"></canvas>
+                </div>
+
+                <div class="chart-container" id="chart-container-consumption" style="display: none;">
+                    <div class="zoom-controls">
+                        <div class="zoom-btn" id="consumption-zoom-in">+</div>
+                        <div class="zoom-btn" id="consumption-zoom-out">-</div>
+                        <div class="zoom-btn reset" id="consumption-zoom-reset">Reset</div>
+                    </div>
+                    <canvas id="consumption-chart" height="270" style="display: block; box-sizing: border-box; height: 270px; width: 611px;"></canvas>
+                </div>
+
+                <div class="chart-container" id="chart-container-daily-consumption" style="display: none;">
+                    <canvas id="daily-consumption-chart" height="270" style="display: block; box-sizing: border-box; height: 270px; width: 611px;"></canvas>
+                </div>
+                <div class="chart-container" id="chart-container-monthly-consumption" style="display: none;">
+                    <canvas id="monthly-consumption-chart" height="270" style="display: block; box-sizing: border-box; height: 270px; width: 611px;"></canvas>
+                </div>
+                <div class="chart-container" id="chart-container-yearly-consumption" style="display: none;">
+                    <canvas id="yearly-consumption-chart" height="270" style="display: block; box-sizing: border-box; height: 270px; width: 611px;"></canvas>
+                </div>
+                <div class="chart-container" id="chart-container-global-consumption" style="display: none;">
+                    <canvas id="global-consumption-chart" height="270" style="display: block; box-sizing: border-box; height: 270px; width: 611px;"></canvas>
+                </div>
+
+                <div class="chart-switcher" id="main-chart-switcher">
+                    <div class="chart-switch active" data-chart-type="temperature">
+                        <span class="chart-color-indicator" style="background-color: #3498db;"></span> Temperatury
+                    </div>
+                    <div class="chart-switch" data-chart-type="consumption">
+                        <span class="chart-color-indicator" style="background-color: #d35400;"></span> Zużycie Opału (Linia)
+                    </div>
+                    <div class="chart-switch" data-chart-type="daily-consumption">
+                        <span class="chart-color-indicator" style="background-color: #d35400;"></span> Zużycie Dzienne
+                    </div>
+                    <div class="chart-switch" data-chart-type="monthly-consumption">
+                        <span class="chart-color-indicator" style="background-color: #d35400;"></span> Zużycie Miesięczne
+                    </div>
+                    <div class="chart-switch" data-chart-type="yearly-consumption">
+                        <span class="chart-color-indicator" style="background-color: #d35400;"></span> Zużycie Roczne
+                    </div>
+                    <div class="chart-switch" data-chart-type="global-consumption">
+                        <span class="chart-color-indicator" style="background-color: #d35400;"></span> Zużycie Globalne
+                    </div>
+                </div>
+
+                <div class="history-range">
+                    <div class="history-btn active" data-range="1h">1h</div>
+                    <div class="history-btn" data-range="6h">6h</div>
+                    <div class="history-btn" data-range="24h">24h</div>
+                    <div class="history-btn" data-range="7d">7d</div>
                 </div>
 
                 <div class="history-stats">
                     <div class="history-card">
-                        <h3 class="history-title"><i class="fas fa-hourglass-half"></i> Czas pracy sesji</h3>
-                        <div class="history-value" id="session-uptime">0h 0m 0s</div>
-                        <button id="resetSessionBtn" class="reset-stats-btn warning"><i class="fas fa-redo-alt"></i> Resetuj sesję</button>
+                        <div class="history-title"><i class="fas fa-fire"></i> Godziny pracy palnika</div>
+                        <div class="history-value" id="burner-hours">00:00</div>
                     </div>
                     <div class="history-card">
-                        <h3 class="history-title"><i class="fas fa-clock"></i> Całkowity czas pracy</h3>
-                        <div class="history-value" id="total-uptime">0h 0m 0s</div>
-                        <button id="resetHistoryBtn" class="reset-stats-btn danger"><i class="fas fa-history"></i> Resetuj historię (wymaga hasła)</button>
-                        <input type="password" id="resetPasswordInput" placeholder="Wpisz hasło">
-                    </div>
-                    <div class="history-card">
-                        <h3 class="history-title"><i class="fas fa-wifi"></i> Siła sygnału WiFi (RSSI)</h3>
-                        <div class="history-value" id="wifi-rssi">-60 dBm</div>
-                    </div>
-                    <div class="history-card">
-                        <h3 class="history-title"><i class="fas fa-network-wired"></i> Adres IP</h3>
-                        <div class="history-value" id="device-ip">192.168.1.100</div>
-                    </div>
-                    <div class="history-card">
-                        <h3 class="history-title"><i class="fas fa-burn"></i> Godziny pracy palnika</h3>
-                        <div class="history-value" id="burner-hours">0h 0m 0s</div>
-                    </div>
-                    <div class="history-card">
-                        <h3 class="history-title"><i class="fas fa-weight-hanging"></i> Ilość pelletu w zbiorniku</h3>
-                        <div class="history-value" id="pellet-level">80%</div>
-                        <div class="progress-container">
-                            <div class="progress-bar pellet-bar" id="pellet-level-progress" style="width: 80%;"></div>
-                        </div>
-                    </div>
-                    <div class="history-card">
-                        <h3 class="history-title"><i class="fas fa-fire-alt"></i> Wydajność</h3>
-                        <div class="history-value" id="efficiency-value">85%</div>
-                        <div class="efficiency-gauge">
-                            <div class="gauge-fill" id="efficiency-gauge-fill" style="width: 85%;"></div>
-                            <span class="gauge-label" id="efficiency-gauge-label">85%</span>
-                        </div>
+                        <div class="history-title"><i class="fas fa-dollar-sign"></i> Szacowany koszt</div>
+                        <div class="history-value" id="estimated-cost">0.00 PLN</div>
                     </div>
                 </div>
 
                 <div class="cost-calculation">
-                    <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> Kalkulacja kosztów</h3>
+                    <h3 class="card-title"><i class="fas fa-calculator"></i> Kalkulacja Kosztów</h3>
                     <div class="cost-row">
-                        <span>Cena pelletu (€/kg):</span>
-                        <input type="number" step="0.01" value="0.30" id="pelletPriceInput" style="width: 80px; text-align: right; background: rgba(255,255,255,0.1); border: none; border-radius: 5px; color: white;">
+                        <span>Cena peletu (PLN/kg):</span>
+                        <input type="number" id="pellet-price" value="1.2" step="0.01">
                     </div>
                     <div class="cost-row">
-                        <span>Zużycie pelletu (kg/h):</span>
-                        <input type="number" step="0.1" value="1.5" id="pelletConsumptionInput" style="width: 80px; text-align: right; background: rgba(255,255,255,0.1); border: none; border-radius: 5px; color: white;">
+                        <span>Zużycie (kg/h):</span>
+                        <input type="number" id="pellet-consumption" value="1.5" step="0.1" disabled="">
                     </div>
-                    <div class="cost-total">
-                        <span>Szacowany całkowity koszt:</span>
-                        <span id="totalCalculatedCost">0.00 €</span>
+                    <div class="cost-row cost-total">
+                        <span>Całkowity koszt:</span>
+                        <span id="total-calculated-cost">0.00 PLN</span>
                     </div>
                 </div>
 
-                <div class="slider-container">
+                <div class="efficiency-gauge">
+                    <div class="gauge-fill" id="efficiency-fill" style="width: 86%;"></div>
+                    <span class="gauge-label" id="efficiency-label">86% Wydajność</span>
+                </div>
+
+                <div class="slider-container" style="margin-top: 20px;">
                     <div class="control-header">
-                        <i class="fas fa-hourglass-half"></i>
-                        <span>Czas do następnego czyszczenia</span>
+                        <i class="fas fa-history" style="color: var(--warning);"></i>
+                        <span>Resetuj Dane Historyczne i Całkowity Czas Pracy</span>
                     </div>
-                    <div class="auto-clean">
-                        <div class="auto-clean-label">
-                            <i class="fas fa-clock"></i> Czas do czyszczenia:
-                        </div>
-                        <span class="clean-timer" id="clean-countdown">0h 0m 0s</span>
+                    <div class="time-input" style="margin-bottom: 15px;">
+                        <label for="reset-password">Hasło (MQTT)</label>
+                        <input type="password" id="reset-password" placeholder="Wprowadź hasło MQTT">
                     </div>
+                    <button id="reset-history-btn" class="danger">
+                        <i class="fas fa-trash-alt"></i> RESETUJ DANE
+                    </button>
+                    <div id="reset-message" style="margin-top: 10px; text-align: center; font-weight: bold;"></div>
                 </div>
             </div>
         </div>
 
-        <footer>
-            <p>&copy; 2025 Sterowanie Piecem Peletowym. Wszelkie prawa zastrzeżone.</p>
-        </footer>
+        <div class="instructions card">
+            <h3><i class="fas fa-info-circle"></i> Instrukcje Użycia</h3>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> Podłącz ESP32 do zasilania i upewnij się, że jest połączony z siecią Wi-Fi.</li>
+                <li><i class="fas fa-check-circle"></i> Otwórz przeglądarkę i przejdź do adresu IP wyświetlonego w monitorze szeregowym.</li>
+                <li><i class="fas fa-check-circle"></i> Użyj przycisku "WŁĄCZONY/WYŁĄCZONY", aby sterować piecem.</li>
+                <li><i class="fas fa-check-circle"></i> Przesuń suwak "Temperatura docelowa", aby ustawić żądaną temperaturę wody.</li>
+                <li><i class="fas fa-check-circle"></i> Monitoruj temperatury, status płomienia, podajnika i dmuchawy.</li>
+                <li><i class="fas fa-check-circle"></i> Sekcja "Monitoring Systemu" pokazuje dane takie jak czas pracy, siła sygnału Wi-Fi i status MQTT (połączenia ESP32).</li>
+                <li><i class="fas fa-check-circle"></i> Wykresy temperatur pozwalają na wizualizację danych historycznych.</li>
+            </ul>
+        </div>
     </div>
-
+    
     <script src="cdn.min.js"></script>
 </body>
 </html>
